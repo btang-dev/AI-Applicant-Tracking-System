@@ -1,45 +1,51 @@
-type ScoreCircleProps = {
-  score: number;
-};
-
-const ScoreCircle = ({ score }: ScoreCircleProps) => {
-  const normalizedScore = Math.max(0, Math.min(100, Math.round(score)));
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (normalizedScore / 100) * circumference;
-
-  const strokeColor =
-    normalizedScore >= 75
-      ? "#16a34a"
-      : normalizedScore >= 50
-        ? "#f59e0b"
-        : "#dc2626";
+const ScoreCircle = ({ score = 75 }: { score: number }) => {
+  const radius = 40;
+  const stroke = 8;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = 2 * Math.PI * normalizedRadius;
+  const progress = score / 100;
+  const strokeDashoffset = circumference * (1 - progress);
 
   return (
-    <div className="relative size-20 shrink-0 sm:size-24" aria-label={`Score ${normalizedScore} out of 100`}>
-      <svg className="size-full -rotate-90" viewBox="0 0 100 100" role="img">
+    <div className="relative w-[100px] h-[100px]">
+      <svg
+        height="100%"
+        width="100%"
+        viewBox="0 0 100 100"
+        className="transform -rotate-90"
+      >
+        {/* Background circle */}
         <circle
           cx="50"
           cy="50"
-          r={radius}
-          fill="none"
+          r={normalizedRadius}
           stroke="#e5e7eb"
-          strokeWidth="8"
+          strokeWidth={stroke}
+          fill="transparent"
         />
+        {/* Partial circle with gradient */}
+        <defs>
+          <linearGradient id="grad" x1="1" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FF97AD" />
+            <stop offset="100%" stopColor="#5171FF" />
+          </linearGradient>
+        </defs>
         <circle
           cx="50"
           cy="50"
-          r={radius}
-          fill="none"
-          stroke={strokeColor}
-          strokeLinecap="round"
-          strokeWidth="8"
+          r={normalizedRadius}
+          stroke="url(#grad)"
+          strokeWidth={stroke}
+          fill="transparent"
           strokeDasharray={circumference}
-          strokeDashoffset={offset}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
         />
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xl font-bold text-gray-900 sm:text-2xl">{normalizedScore}</span>
+
+      {/* Score and issues */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-semibold text-sm">{`${score}/100`}</span>
       </div>
     </div>
   );
