@@ -1,11 +1,30 @@
 import {type FormEvent, useState } from 'react';
+import FileUploader from '~/components/FileUploader';
 import Navbar from '~/components/Navbar';
 
 
 const Upload = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {}
+    const [file, setFile] = useState<File | null>(null);
+
+    const handleFileSelect = (file: File | null) => {
+        setFile(file);
+    }
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Prevent the default form submission behavior
+
+        const formData = new FormData(e.currentTarget); // Create a FormData object from the submitted form
+
+        const companyName = formData.get('company-name');
+        const jobTitle = formData.get('job-title');
+        const jobDescription = formData.get('job-description');
+
+        console.log('Resume analysis form data:', {
+            companyName, jobTitle, jobDescription, file
+        }); // Log the form data and the selected file to the console
+
+    }
     
     return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
@@ -37,6 +56,15 @@ const Upload = () => {
                         <label htmlFor="job-description">Job Description</label>
                         <textarea rows={5} name="job-description" placeholder="job-description" id="job-description"/>
                     </div>
+
+                    <div className="form-div">
+                        <label htmlFor="uploader">Upload Resume</label>
+                        <FileUploader onFileSelect={handleFileSelect} />
+                    </div>
+
+                    <button className="primary-button" type="submit">
+                        Analyze Resume
+                    </button>
                     
                 </form>
                 )}
