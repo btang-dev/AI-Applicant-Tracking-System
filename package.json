@@ -6,6 +6,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
+    "test": "node --test --experimental-strip-types tests/feedback.test.mjs",
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {

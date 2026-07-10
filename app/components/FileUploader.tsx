@@ -1,4 +1,4 @@
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
 import {useDropzone} from "react-dropzone";
 
 interface FileUploaderProps {
@@ -17,29 +17,36 @@ export const formatSize = (bytes: number) => {
 }
 
 const FileUploader = ( {onFileSelect}: FileUploaderProps) => {
-    const onDrop = useCallback((acceptedFiles: File[]) => {
-        // Do something with the files
-        const file = acceptedFiles[0] || null;
+    const [file, setFile] = useState<File | null>(null);
+    const [fileError, setFileError] = useState('');
 
-        onFileSelect?.(file); // Call the callback function if provided
+    const onDrop = useCallback((acceptedFiles: File[]) => {
+        const selectedFile = acceptedFiles[0] || null;
+
+        setFile(selectedFile);
+        setFileError('');
+        onFileSelect?.(selectedFile);
     }, [onFileSelect]);
-    const {getRootProps, getInputProps, isDragActive, acceptedFiles} = useDropzone({
+
+    const {getRootProps, getInputProps, isDragActive, open} = useDropzone({
         onDrop,
+        onDropRejected: (rejections) => {
+            const message = rejections[0]?.errors[0]?.message ?? 'Please select a valid PDF file.';
+            setFile(null);
+            setFileError(message);
+            onFileSelect?.(null);
+        },
         multiple: false,
         accept: {
-            'application/pdf': ['.pdf'], // Accept PDF files
-            'application/msword': ['.doc'], // Accept DOC files
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'], // Accept DOCX files
+            'application/pdf': ['.pdf'],
         },
         maxSize: 20 * 1024 * 1024, // 20 MB
     });
 
-    const file = acceptedFiles[0] || null; // Get the first accepted file or null if none
-
     return (
         <div className="w-full gradient-border">
-            <div {...getRootProps()}>
-                <input {...getInputProps()} />
+            <div {...getRootProps()} className="uplader-drag-area">
+                <input {...getInputProps({id: 'uploader'})} />
                 <div className="space-y-4 cursor-pointer">
                     {file ? (
                         <div className="uploader-selected-file" onClick={(e) => e.stopPropagation()}>
@@ -56,8 +63,10 @@ const FileUploader = ( {onFileSelect}: FileUploaderProps) => {
                                 <img src="/icons/check.svg" alt="selected" className="size-6" />
                             </div>
                             <button type="button" className="p-2 cursor-pointer" onClick={(e) => {
-                                 onFileSelect?.(null); // Clear the selected file
-                                 e.stopPropagation(); // Prevent the click from triggering the dropzone click
+                                 setFile(null);
+                                 setFileError('');
+                                 onFileSelect?.(null);
+                                 e.stopPropagation();
                              }}>
                                 <img src="/icons/cross.svg" alt="remove" className="w-4 h-4" />
                             </button>
@@ -68,16 +77,23 @@ const FileUploader = ( {onFileSelect}: FileUploaderProps) => {
                                 <img src="/icons/info.svg" alt="upload" className="size-20" />
                             </div>
                             <p className="text-lg text-gray-500">
-                                <span className="font-semibold">
+                                <button
+                                    type="button"
+                                    className="font-semibold cursor-pointer"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        open();
+                                    }}
+                                >
                                     Click to Upload
-                                </span> or drag and drop
+                                </button> or drag and drop
                             </p>
                             <p className="text-lg text-gray-500">
-                                Supported file types: .pdf, .doc, .docx (max 20 MB)
+                                Supported file type: .pdf (max 20 MB)
                             </p>
                         </div> 
                     )}
-
+                    {fileError && <p className="text-sm text-red-600">{fileError}</p>}
                 </div>
             </div>
         </div>
