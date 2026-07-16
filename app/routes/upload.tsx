@@ -148,6 +148,7 @@ const Upload = () => {
 
             setStatusText('Analysis complete.');
             console.info('[Upload] Complete resume record', {key: resumeKey, data});
+            navigate(`/resume/${uuid}`);
         } catch (error) {
             const message = getErrorMessage(error);
             console.error(`[Upload] Failed during ${stage}`, error);
