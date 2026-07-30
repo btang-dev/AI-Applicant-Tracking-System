@@ -2,6 +2,9 @@
 .env
 /node_modules/
 
+# Codex local state
+/.agent/
+
 # React Router
 /.react-router/
 /build/
