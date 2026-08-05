@@ -1,9 +1,10 @@
-import { Link, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { usePuterStore } from "~/lib/puter";
 import Summary from "~/components/Summary";
 import Details from "~/components/Details";
 import ATS from "~/components/ATS";
+import Navbar from "~/components/Navbar";
 import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/brand";
 
 export const meta = () => ([
@@ -77,13 +78,8 @@ const Resume = () => {
     }, [auth.isAuthenticated, fs, id, isLoading, kv, navigate, puterReady]);
 
     return (
-        <main className="!pt-0">
-            <nav className="resume-nav">
-                <Link to="/" className="back-button">
-                    <img src="/icons/back.svg" alt="" className="w-2.5 h-2.5" />
-                    <span className="text-gray-800 text-sm font-semibold">Back to Homepage</span>
-                </Link>
-            </nav>
+        <main>
+            <Navbar />
             <div className="flex flex-row w-full max-lg:flex-col-reverse">
                 <section className="feedback-section bg-[url('/images/bg-small.svg')] bg-cover min-h-[calc(100vh-73px)] items-center justify-center">
                     {imageUrl && resumeUrl && (

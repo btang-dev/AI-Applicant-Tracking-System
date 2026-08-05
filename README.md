@@ -35,6 +35,9 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+The public landing page is available at `/`. After signing in, the resume
+dashboard is available at `/home`, with new resume analysis at `/upload`.
+
 ## Building for Production
 
 Create a production build:

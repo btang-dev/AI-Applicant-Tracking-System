@@ -14,17 +14,21 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-    const { auth, kv } = usePuterStore();
+    const { auth, isLoading, puterReady, kv } = usePuterStore();
     const navigate = useNavigate();
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
 
     useEffect(() => {
-        if(!auth.isAuthenticated) navigate('/auth?next=/');
-    }, [auth.isAuthenticated]);
+        if(puterReady && !isLoading && !auth.isAuthenticated) {
+          navigate('/?next=/home', { replace: true });
+        }
+    }, [auth.isAuthenticated, isLoading, navigate, puterReady]);
 
     useEffect(() => {
       const loadResumes = async () => {
+        if (!puterReady || isLoading || !auth.isAuthenticated) return;
+
         setLoadingResumes(true);
 
         const storedResumes = (await kv.list('resume:*', true)) as KVItem[] | undefined;
@@ -39,12 +43,11 @@ export default function Home() {
       };
 
       void loadResumes();
-    }, []);
+    }, [auth.isAuthenticated, isLoading, kv, puterReady]);
 
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
+    <Navbar />
     <section className="main-section">
-      <Navbar />
-
       <div className="page-heading py-16">
         <h1> Track Your Applications & Resume Ratings</h1>
         {!loadingResumes && resumes?.length === 0 ? (
