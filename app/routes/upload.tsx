@@ -6,7 +6,13 @@ import {useNavigate} from "react-router";
 import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID, getErrorMessage} from '~/lib/utils';
 import {normalizeFeedback, parseFeedbackText} from '~/lib/feedback';
+import { SITE_DESCRIPTION, SITE_NAME } from '~/lib/brand';
 import { AIResponseFormat, prepareInstructions } from "../../constants";
+
+export const meta = () => ([
+    { title: `${SITE_NAME} | Upload` },
+    { name: 'description', content: SITE_DESCRIPTION },
+]);
 
 const extractTextContent = (content: unknown): string | null => {
     if (typeof content === 'string') {

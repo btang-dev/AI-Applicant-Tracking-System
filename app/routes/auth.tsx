@@ -1,10 +1,11 @@
 import { usePuterStore } from "~/lib/puter";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/brand";
 
 export const meta = () => ([
-    { title: 'Resume Tracker | Auth' },
-    { name: 'description', content: 'Log into your account.' },
+    { title: `${SITE_NAME} | Account` },
+    { name: 'description', content: SITE_DESCRIPTION },
 
 ])
 

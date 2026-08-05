@@ -6,6 +6,7 @@
   --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-dark-200: #475467;
+  --color-canvas: #f7f8f4;
   --color-light-blue-100: #c1d3f81a;
   --color-light-blue-200: #a7bff14d;
 
@@ -20,7 +21,7 @@
 
 html,
 body {
-  @apply bg-white;
+  @apply bg-canvas;
 }
 
 main {
@@ -57,7 +58,7 @@ form {
     @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200 p-4 rounded-2xl;
   }
   .primary-button {
-    @apply primary-gradient text-white rounded-full px-4 py-2 cursor-pointer w-full;
+    @apply primary-gradient hover:primary-gradient-hover text-white rounded-full px-4 py-2 cursor-pointer w-full transition-colors duration-200;
   }
   .resume-nav {
     @apply flex flex-row justify-between items-center p-4 border-b border-gray-200;
@@ -72,7 +73,7 @@ form {
     @apply flex flex-row items-center gap-2 border border-gray-200 rounded-lg p-2 shadow-sm;
   }
   .auth-button {
-    @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
+    @apply primary-gradient hover:primary-gradient-hover rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white transition-colors duration-200;
   }
   .main-section {
     @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-15 pb-5;
@@ -125,7 +126,7 @@ form {
 }
 
 @utility bg-gradient {
-  background: linear-gradient(to bottom, #f0f4ff 60%, #fa7185cc);
+  background: linear-gradient(to bottom, #eff5f1 60%, #d9b6a5cc);
 }
 
 @utility text-gradient {
@@ -137,12 +138,12 @@ form {
 }
 
 @utility primary-gradient {
-  background: linear-gradient(to bottom, #8e98ff, #606beb);
-  box-shadow: 0px 74px 21px 0px #6678ef00;
+  background: linear-gradient(to bottom, #4f7064, #2f4d43);
+  box-shadow: 0px 12px 24px -14px rgba(47, 77, 67, 0.75);
 }
 
 @utility primary-gradient-hover {
-  background: linear-gradient(to bottom, #717dff, #4957eb);
+  background: linear-gradient(to bottom, #456559, #263f37);
 }
 
 @utility inset-shadow {

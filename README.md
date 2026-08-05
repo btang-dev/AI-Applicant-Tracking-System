@@ -1,6 +1,7 @@
-# Welcome to React Router!
+# RoleLume
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Illuminate your fit for every role. RoleLume provides AI-powered resume analysis,
+ATS scoring, and actionable feedback for targeted job applications.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
 

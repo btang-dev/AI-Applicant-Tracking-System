@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { usePuterStore } from "~/lib/puter";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/brand";
+
+export const meta = () => ([
+    { title: `${SITE_NAME} | Data Management` },
+    { name: "description", content: SITE_DESCRIPTION },
+]);
 
 const WipeApp = () => {
     const { auth, isLoading, error, clearError, fs, ai, kv } = usePuterStore();

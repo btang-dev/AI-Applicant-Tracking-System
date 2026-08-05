@@ -4,11 +4,12 @@ import ResumeCard from "~/components/ResumeCard";
 import { usePuterStore } from "~/lib/puter";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/brand";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Resume Tracker" },
-    { name: "description", content: "The external tool to help you polish your resume!" },
+    { title: SITE_NAME },
+    { name: "description", content: SITE_DESCRIPTION },
   ];
 }
 

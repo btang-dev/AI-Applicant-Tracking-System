@@ -13,6 +13,9 @@ import { usePuterStore } from "~/lib/puter";
 import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/favicon.ico?v=2", type: "image/x-icon" },
+  { rel: "icon", href: "/favicon.svg?v=2", type: "image/svg+xml", sizes: "any" },
+  { rel: "shortcut icon", href: "/favicon.ico?v=2", type: "image/x-icon" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -37,6 +40,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#eff5f1" />
         <Meta />
         <Links />
       </head>

@@ -4,10 +4,11 @@ import { usePuterStore } from "~/lib/puter";
 import Summary from "~/components/Summary";
 import Details from "~/components/Details";
 import ATS from "~/components/ATS";
+import { SITE_DESCRIPTION, SITE_NAME } from "~/lib/brand";
 
 export const meta = () => ([
-    { title: "Resume Tracker | Review" },
-    { name: "description", content: "Detailed overview of your resume." },
+    { title: `${SITE_NAME} | Review` },
+    { name: "description", content: SITE_DESCRIPTION },
 ]);
 
 const Resume = () => {
