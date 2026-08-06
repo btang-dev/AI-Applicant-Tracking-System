@@ -313,6 +313,42 @@ form {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Top notice (minimal, non-intrusive) */
+.top-notice {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  pointer-events: none;
+  width: min(880px, calc(100% - 32px));
+}
+
+.top-notice-inner {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: white;
+  color: var(--landing-ink);
+  border: 1px solid rgba(24, 53, 45, 0.08);
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px -12px rgba(24, 53, 45, 0.45);
+  font-size: 0.95rem;
+}
+
+.top-notice-dismiss {
+  background: transparent;
+  border: none;
+  color: rgba(24, 53, 45, 0.7);
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 6px;
+  cursor: pointer;
+}
+
 .landing-page a:focus-visible,
 .landing-page button:focus-visible {
   outline: 3px solid rgba(79, 112, 100, 0.35);
