@@ -57,7 +57,7 @@ const getSafeNextPath = (search: string) => {
 
 export default function Landing() {
   const page = useRef<HTMLElement>(null);
-  const { auth, isLoading } = usePuterStore();
+  const { auth, isLoading, puterReady } = usePuterStore();
   const location = useLocation();
   const navigate = useNavigate();
   const nextPath = getSafeNextPath(location.search);
@@ -152,7 +152,7 @@ export default function Landing() {
             type="button"
             className="landing-sign-in"
             onClick={() => void handleSignIn()}
-            disabled={isLoading}
+            disabled={isLoading || !puterReady}
           >
             {isLoading ? "Checking…" : "Sign in"}
             <span aria-hidden="true">↗</span>
@@ -178,7 +178,7 @@ export default function Landing() {
               type="button"
               className="landing-primary-cta"
               onClick={() => void handleSignIn()}
-              disabled={isLoading}
+              disabled={isLoading || !puterReady}
             >
               {isLoading ? "Checking your account…" : "Check my resume"}
               <span aria-hidden="true">→</span>
@@ -276,7 +276,7 @@ export default function Landing() {
           type="button"
           className="landing-primary-cta landing-primary-cta-light"
           onClick={() => void handleSignIn()}
-          disabled={isLoading}
+          disabled={isLoading || !puterReady}
         >
           Sign in and upload your resume
           <span aria-hidden="true">→</span>

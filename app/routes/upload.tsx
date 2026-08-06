@@ -1,4 +1,4 @@
-import {type FormEvent, useState } from 'react';
+import {type FormEvent, useEffect, useState } from 'react';
 import FileUploader from '~/components/FileUploader';
 import Navbar from '~/components/Navbar';
 import {usePuterStore} from "~/lib/puter";
@@ -69,6 +69,12 @@ const Upload = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
     const [file, setFile] = useState<File | null>(null);
+
+    useEffect(() => {
+        if (!isLoading && !auth.isAuthenticated) {
+            navigate('/?next=/upload', { replace: true });
+        }
+    }, [auth.isAuthenticated, isLoading, navigate]);
 
     const handleFileSelect = (file: File | null) => {
         setFile(file);
@@ -180,6 +186,10 @@ const Upload = () => {
 
     }
     
+    if (!auth.isAuthenticated && !isLoading) {
+        return null;
+    }
+
     return (
     <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
