@@ -97,7 +97,7 @@ export default function TopNotice() {
         { y: -18, autoAlpha: 0 },
         { y: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }
       );
-      if (!isError) hideTimer = window.setTimeout(() => setVisible(false), 4200);
+      hideTimer = window.setTimeout(() => setVisible(false), 6000);
     } else {
       gsap.killTweensOf(node);
       gsap.to(node, { y: -10, autoAlpha: 0, duration: 0.36, ease: "power2.in" });
