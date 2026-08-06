@@ -102,6 +102,36 @@ let puterLoadPromise: Promise<typeof window.puter | null> | null = null;
 const getPuter = (): typeof window.puter | null =>
   typeof window !== "undefined" && window.puter ? window.puter : null;
 
+export const isPuterAuthApiReady = (
+  puter: typeof window.puter | null
+): puter is typeof window.puter =>
+  Boolean(
+    puter &&
+      puter.auth &&
+      typeof puter.auth.signIn === "function" &&
+      typeof puter.auth.signOut === "function" &&
+      typeof puter.auth.isSignedIn === "function" &&
+      typeof puter.auth.getUser === "function"
+  );
+
+const waitForPuterAuthReady = async (
+  timeoutMs = 5000
+): Promise<typeof window.puter | null> => {
+  const deadline = Date.now() + timeoutMs;
+
+  while (Date.now() < deadline) {
+    const puter = getPuter();
+
+    if (isPuterAuthApiReady(puter)) {
+      return puter;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+
+  return getPuter();
+};
+
 const ensurePuterLoaded = async (): Promise<typeof window.puter | null> => {
   const existingPuter = getPuter();
   if (existingPuter) {
@@ -122,8 +152,14 @@ const ensurePuterLoaded = async (): Promise<typeof window.puter | null> => {
     );
 
     if (existingScript) {
-      if (existingScript.dataset.puterLoaded === "true") {
-        resolve(getPuter());
+      if (
+        existingScript.dataset.puterLoaded === "true" ||
+        isPuterAuthApiReady(getPuter())
+      ) {
+        existingScript.dataset.puterLoaded = "true";
+        void (async () => {
+          resolve(await waitForPuterAuthReady());
+        })();
         return;
       }
 
@@ -131,7 +167,9 @@ const ensurePuterLoaded = async (): Promise<typeof window.puter | null> => {
         "load",
         () => {
           existingScript.dataset.puterLoaded = "true";
-          resolve(getPuter());
+          void (async () => {
+            resolve(await waitForPuterAuthReady());
+          })();
         },
         { once: true }
       );
@@ -150,7 +188,9 @@ const ensurePuterLoaded = async (): Promise<typeof window.puter | null> => {
       "load",
       () => {
         script.dataset.puterLoaded = "true";
-        resolve(getPuter());
+        void (async () => {
+          resolve(await waitForPuterAuthReady());
+        })();
       },
       { once: true }
     );

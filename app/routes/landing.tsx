@@ -57,7 +57,7 @@ const getSafeNextPath = (search: string) => {
 
 export default function Landing() {
   const page = useRef<HTMLElement>(null);
-  const { auth, isLoading, puterReady } = usePuterStore();
+  const { auth, error, isLoading, puterReady } = usePuterStore();
   const location = useLocation();
   const navigate = useNavigate();
   const nextPath = getSafeNextPath(location.search);
@@ -159,6 +159,12 @@ export default function Landing() {
           </button>
         </nav>
       </header>
+
+      {error ? (
+        <div className="landing-auth-alert" role="alert">
+          {error}
+        </div>
+      ) : null}
 
       <section id="top" className="landing-hero" aria-labelledby="hero-title">
         <div className="landing-hero-copy" data-hero-copy>
