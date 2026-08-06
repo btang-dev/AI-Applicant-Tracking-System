@@ -349,6 +349,15 @@ form {
   cursor: pointer;
 }
 
+.top-notice-retry {
+  background: transparent;
+  border: 1px solid rgba(47,77,67,0.12);
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--landing-sage-deep);
+  cursor: pointer;
+}
+
 .landing-page a:focus-visible,
 .landing-page button:focus-visible {
   outline: 3px solid rgba(79, 112, 100, 0.35);

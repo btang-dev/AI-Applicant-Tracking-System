@@ -160,45 +160,7 @@ export default function Landing() {
         </nav>
       </header>
 
-      {error ? (
-        <div className="landing-auth-alert" role="alert">
-          <div className="landing-auth-error">
-            <strong>Sign in failed</strong>
-            <div className="landing-auth-error-text">{error}</div>
-          </div>
-          <div className="landing-auth-actions">
-            <button
-              type="button"
-              className="landing-text-link"
-              onClick={async () => {
-                clearError();
-                try {
-                  init();
-                  await auth.signIn();
-                } catch (e) {
-                  // allow store to record the error; also log for DevTools
-                  // eslint-disable-next-line no-console
-                  console.error('[Landing] Retry sign-in failed', e);
-                }
-              }}
-              disabled={isLoading}
-            >
-              Retry sign in
-            </button>
-            <button
-              type="button"
-              className="landing-text-link"
-              onClick={() => clearError()}
-            >
-              Dismiss
-            </button>
-          </div>
-          <small className="landing-auth-hint">
-            Check the browser console (DevTools) for details or disable any popup
-            blocker.
-          </small>
-        </div>
-      ) : null}
+      {/* Errors are surfaced by the TopNotice component now. */}
 
       <section id="top" className="landing-hero" aria-labelledby="hero-title">
         <div className="landing-hero-copy" data-hero-copy>
