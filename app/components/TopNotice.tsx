@@ -23,124 +23,134 @@ const detectAdBlock = (): boolean => {
 };
 
 export default function TopNotice() {
-    const el = useRef<HTMLDivElement | null>(null);
-    const [visible, setVisible] = useState(false);
-    const [text, setText] = useState("");
-    const [isError, setIsError] = useState(false);
+  const el = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [messagePrefix, setMessagePrefix] = useState<string | null>(null);
+  const [messageBody, setMessageBody] = useState("");
+  const [isError, setIsError] = useState(false);
 
-    const auth = usePuterStore((s) => s.auth);
-    const init = usePuterStore((s) => s.init);
-    const clearError = usePuterStore((s) => s.clearError);
+  const auth = usePuterStore((s) => s.auth);
+  const init = usePuterStore((s) => s.init);
+  const clearError = usePuterStore((s) => s.clearError);
 
-    // detect adblock on mount
-    useEffect(() => {
-      if (typeof window === "undefined") return;
-      const blocked = detectAdBlock();
-      if (blocked) {
-        setText(ADBLOCK_MESSAGE);
-        setIsError(false);
-        setVisible(true);
+  const showNotification = (prefix: string | null, body: string, error = false) => {
+    setMessagePrefix(prefix);
+    setMessageBody(body);
+    setIsError(error);
+    setVisible(true);
+  };
+
+  // detect adblock on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const blocked = detectAdBlock();
+    if (blocked) {
+      showNotification(null, ADBLOCK_MESSAGE, false);
+    }
+  }, []);
+
+  // show when user signs out (auth transition true -> false)
+  useEffect(() => {
+    let prev = auth.isAuthenticated;
+    const unsub = usePuterStore.subscribe((s) => {
+      const next = s.auth.isAuthenticated;
+      if (prev && !next) {
+        showNotification(null, SIGNED_OUT_MESSAGE, false);
       }
-    }, []);
+      prev = next;
+    });
 
-    // show when user signs out (auth transition true -> false)
-    useEffect(() => {
-      let prev = auth.isAuthenticated;
-      const unsub = usePuterStore.subscribe((s) => {
-        const next = s.auth.isAuthenticated;
-        if (prev && !next) {
-          setText(SIGNED_OUT_MESSAGE);
-          setIsError(false);
-          setVisible(true);
-        }
-        prev = next;
-      });
+    return () => unsub();
+  }, [auth]);
 
-      return () => unsub();
-    }, [auth]);
+  // show when store reports an error
+  useEffect(() => {
+    let prevErr: string | null = null;
+    const unsubErr = usePuterStore.subscribe((s) => {
+      const nextErr = s.error;
+      if (nextErr && nextErr !== prevErr) {
+        const signInPrefix = /^sign in failed\.?/i.test(nextErr)
+          ? "Sign in failed."
+          : null;
 
-    // show when store reports an error
-    useEffect(() => {
-      let prevErr: string | null = null;
-      const unsubErr = usePuterStore.subscribe((s) => {
-        const nextErr = s.error;
-        if (nextErr && nextErr !== prevErr) {
-          setText(
-            `${nextErr} Check the browser console (DevTools) for details or disable any popup/ad blocker.`
-          );
-          setIsError(true);
-          setVisible(true);
-        }
-        prevErr = nextErr;
-      });
+        const body = signInPrefix
+          ? " Check the browser console (DevTools) for details or disable any popup/ad blocker."
+          : `${nextErr} Check the browser console (DevTools) for details or disable any popup/ad blocker.`;
 
-      return () => unsubErr();
-    }, []);
-
-    useEffect(() => {
-      if (!el.current) return;
-      const node = el.current;
-      let hideTimer: number | undefined;
-
-      if (visible) {
-        gsap.killTweensOf(node);
-        gsap.fromTo(
-          node,
-          { y: -18, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }
-        );
-        // auto-hide only for non-error notices
-        if (!isError) hideTimer = window.setTimeout(() => setVisible(false), 4200);
-      } else {
-        gsap.killTweensOf(node);
-        gsap.to(node, { y: -10, autoAlpha: 0, duration: 0.36, ease: "power2.in" });
+        showNotification(signInPrefix, body, true);
       }
+      prevErr = nextErr;
+    });
 
-      return () => {
-        if (hideTimer) window.clearTimeout(hideTimer);
-      };
-    }, [visible, text, isError]);
+    return () => unsubErr();
+  }, []);
 
-    if (!text) return null;
+  useEffect(() => {
+    if (!el.current) return;
+    const node = el.current;
+    let hideTimer: number | undefined;
 
-    const onRetry = async () => {
-      clearError();
-      try {
-        init();
-        await auth.signIn();
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error("TopNotice retry sign-in failed", e);
-      }
-      setVisible(false);
+    if (visible) {
+      gsap.killTweensOf(node);
+      gsap.fromTo(
+        node,
+        { y: -18, autoAlpha: 0 },
+        { y: 0, autoAlpha: 1, duration: 0.45, ease: "power2.out" }
+      );
+      if (!isError) hideTimer = window.setTimeout(() => setVisible(false), 4200);
+    } else {
+      gsap.killTweensOf(node);
+      gsap.to(node, { y: -10, autoAlpha: 0, duration: 0.36, ease: "power2.in" });
+    }
+
+    return () => {
+      if (hideTimer) window.clearTimeout(hideTimer);
     };
+  }, [visible, messagePrefix, messageBody, isError]);
 
-    const onDismiss = () => {
-      clearError();
-      setVisible(false);
-    };
+  if (!messagePrefix && !messageBody) return null;
 
-    return (
-      <div ref={el} className="top-notice" aria-live="polite">
-        <div className="top-notice-inner">
-          <span>{text}</span>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            {isError ? (
-              <>
-                <button className="top-notice-retry" onClick={onRetry}>
-                  Retry
-                </button>
-                <button className="top-notice-dismiss" onClick={onDismiss} aria-label="Dismiss notification">
-                  ×
-                </button>
-              </>
-            ) : (
-              <button className="top-notice-dismiss" onClick={() => setVisible(false)} aria-label="Dismiss notification">
+  const onRetry = async () => {
+    clearError();
+    try {
+      init();
+      await auth.signIn();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("TopNotice retry sign-in failed", e);
+    }
+    setVisible(false);
+  };
+
+  const onDismiss = () => {
+    clearError();
+    setVisible(false);
+  };
+
+  return (
+    <div ref={el} className="top-notice" aria-live="polite">
+      <div className="top-notice-inner">
+        <span className="top-notice-text">
+          {messagePrefix ? <strong>{messagePrefix}</strong> : null}
+          {messageBody}
+        </span>
+        <div className="top-notice-actions">
+          {isError ? (
+            <>
+              <button className="top-notice-retry" onClick={onRetry}>
+                Retry
+              </button>
+              <button className="top-notice-dismiss" onClick={onDismiss} aria-label="Dismiss notification">
                 ×
               </button>
-            )}
-          </div>
+            </>
+          ) : (
+            <button className="top-notice-dismiss" onClick={onDismiss} aria-label="Dismiss notification">
+              ×
+            </button>
+          )}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
