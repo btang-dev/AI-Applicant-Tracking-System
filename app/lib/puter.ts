@@ -294,6 +294,9 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         await puter.auth.signIn();
         await checkAuthStatus();
       } catch (err) {
+        // Log the raw error to the console so DevTools shows the failure
+        // eslint-disable-next-line no-console
+        console.error('Puter signIn failed', err);
         const msg = err instanceof Error ? err.message : "Sign in failed";
         setError(msg);
       }
