@@ -282,9 +282,35 @@ export const usePuterStore = create<PuterStore>((set, get) => {
 
   const signIn = async (): Promise<void> => {
     try {
+      // Attempt to open a placeholder popup synchronously so the browser
+      // considers the auth flow a user gesture. If this fails, the popup
+      // was blocked and we bail early with a helpful message.
+      let placeholderPopup: Window | null = null;
+      try {
+        if (typeof window !== "undefined") {
+          placeholderPopup = window.open(
+            "",
+            "puter_auth_window",
+            "width=700,height=700"
+          );
+          if (!placeholderPopup) {
+            setError("The sign-in popup was blocked by the browser.");
+            return;
+          }
+        }
+      } catch (openErr) {
+        // If window.open throws, treat as blocked.
+        setError("The sign-in popup was blocked by the browser.");
+        return;
+      }
+
       const puter = await ensurePuterLoaded();
       if (!puter) {
         setError("Puter.js not available");
+        // close placeholder if still open
+        try {
+          if (placeholderPopup && !placeholderPopup.closed) placeholderPopup.close();
+        } catch (e) {}
         return;
       }
 
@@ -296,9 +322,14 @@ export const usePuterStore = create<PuterStore>((set, get) => {
       } catch (err) {
         // Log the raw error to the console so DevTools shows the failure
         // eslint-disable-next-line no-console
-        console.error('Puter signIn failed', err);
+        console.error("Puter signIn failed", err);
         const msg = err instanceof Error ? err.message : "Sign in failed";
         setError(msg);
+      } finally {
+        // close placeholder if still open
+        try {
+          if (placeholderPopup && !placeholderPopup.closed) placeholderPopup.close();
+        } catch (e) {}
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to load Puter";
