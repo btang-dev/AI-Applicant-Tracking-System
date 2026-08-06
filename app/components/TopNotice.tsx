@@ -42,16 +42,14 @@ export default function TopNotice() {
   // show when user signs out (auth transition true -> false)
   useEffect(() => {
     let prev = auth.isAuthenticated;
-    const unsub = usePuterStore.subscribe(
-      (s) => s.auth.isAuthenticated,
-      (next) => {
-        if (prev && !next) {
-          setText(SIGNED_OUT_MESSAGE);
-          setVisible(true);
-        }
-        prev = next;
+    const unsub = usePuterStore.subscribe((s) => {
+      const next = s.auth.isAuthenticated;
+      if (prev && !next) {
+        setText(SIGNED_OUT_MESSAGE);
+        setVisible(true);
       }
-    );
+      prev = next;
+    });
 
     return () => unsub();
   }, [auth]);
